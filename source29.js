@@ -39,8 +39,8 @@ function getSearchIterator() {
         var json = arr[i];
         var cid = json.comic_newid+"_"+json.comic_id;
         var title = json.comic_name;
-//        Log.d("标题", title);
-        var cover = "http://cover.feimh8.com/mh/"+cid+".jpg-300x400.jpg";
+        var cover = "http://cover.feimh8.com/mh/"+json.comic_id+".jpg-300x400.jpg";
+        Log.d("封面", cover);
         var update = json.last_chapter_name;
         var author = json.comic_author;
 
@@ -81,7 +81,7 @@ function parseChapter () {
     var chapterList = body.list("#js_chapter_list li");
     var list = new ArrayList();
 
-    for (var i = 0; i < chapterList.size(); i ++) {
+    for (var i = chapterList.size()-1; i >= 0; i --) {
         var node = chapterList.get(i);
         var title = node.text(".chapter-name .name");
         var path = node.attr("a", "href");
@@ -186,7 +186,7 @@ function parseCategory() {
         var cid = json.comic_newid+"_"+json.comic_id;
         var title = json.comic_name;
 //        Log.d("标题", title);
-        var cover = "http://cover.feimh8.com/mh/"+cid+".jpg-300x400.jpg";
+        var cover = "http://cover.feimh8.com/mh/"+json.comic_id+".jpg-300x400.jpg";
         var update = json.last_chapter_name;
         var author = json.comic_author;
 
