@@ -35,7 +35,6 @@ function getSearchRequest (keyword, page) {
 //解析搜索页面: content是脚本注入
 function getSearchIterator() {
     var body = new Node(content);
-    Log.d("内容", content);
     var searchList = body.list("ul#listbody > li");
     var list = new ArrayList();
     for (var i = 0; i < searchList.size(); i ++) {
