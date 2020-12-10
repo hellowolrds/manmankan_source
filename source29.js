@@ -61,7 +61,7 @@ function parseInfo() {
     //    java代码中注入的网页源码 content
     var body = new Node(content);
     var title = body.text(".comic-detail h1");
-    var cover = body.attr(".comic-cover img", "data-src");
+    var cover = "https://"+body.attr(".comic-cover img", "data-src");
     var update = body.text("#js_read_catalog .update-time");
     var author = "";
     var intro = body.text("#js_desc_content");
@@ -94,7 +94,6 @@ function parseChapter () {
 // 请求漫画展示详情
 function getImagesRequest(cid, path) {
     var url = "https://m.manhuayang.com" + path;
-    Log.d("地址", url);
     return new Request.Builder()
     .addHeader("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
     .url(url).build();
@@ -115,7 +114,6 @@ function getHeader3 () {
 function parseImages() {
     var list = new ArrayList();
     var image_str = StringUtils.match("comicInfo=(.+)\\}\\}", content, 1);
-    Log.d("图片字符串", image_str);
     eval("var data = "+image_str+"}}");
 //    Log.d("代码", data);
     var base_url = "https://"+data.current_chapter.chapter_domain;
