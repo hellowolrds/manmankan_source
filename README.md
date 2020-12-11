@@ -15,7 +15,7 @@ Second development project based on cimoc project, thank the original author
 
 
 # 漫画源
-> 各位大佬们提交漫画源相关issue，输入源名称，我只要修改一下js代码，然后同步一下源就可以了。
+> 各位大佬们提交漫画源相关issue，输入源名称，修改一下js代码，然后同步一下源就可以了，或者本地导入网络导入都行。
 
 # 功能简介
 - 漫画推荐（Cartoon recommendation）
