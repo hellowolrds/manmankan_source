@@ -42,7 +42,7 @@ Second development project based on cimoc project, thank the original author
 <img src="./images/7.jpg" width="250">
 
 # 增加图源（欢迎pr）
-- 关于开发新的图源，你可以参考项目中js，所有套路都是一样的，可能解析漫画地址的核心逻辑会不一样。整体逻辑都是一样，注意没个源sort是唯一的，请注意参考。
+- 关于开发新的图源，你可以参考项目中js，所有套路都是一样的，可能解析漫画地址的核心逻辑会不一样。整体逻辑都是一样，注意每个源sort是唯一的，请注意参考，如果导入的代码sort相同，则会覆盖现有的源。
 > 自己开发源后，本地导入，或者网络导入都行。
 > 关于源书写教程
  ```js
