@@ -4,7 +4,7 @@
 
 Android 平台在线漫画阅读器, 基于cimoc项目进行二次开发项目，感谢原作者。
 Online manga reader based on Android
-Second development project based on cimoc project, thank the original author
+Second development project based on cimoc project, thank the original author 111
 
 
 # 下载
