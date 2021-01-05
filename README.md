@@ -8,7 +8,7 @@ Second development project based on cimoc project, thank the original author
 
 
 # 下载
-> 关于app下载，大家可以在蓝奏云上面进行下载，目前有3.0版本和1.6.6版本。其中这两个版本主要差别是在漫画源，3.0版本已经将漫画抽离出来了，我本身只能维护线上这些源，如果你有能力可以自己写源，并且导入，里面有测试。大家可以根据教程进行进行编写，源所用的依赖类，是基于cimoc中工具类，这些没变动。
+> 关于app下载，大家可以在蓝奏云上面进行下载，目前有3.1版本，3.0版本和1.6.6版本。其中这三个版本主要差别是在漫画源，3.1和3.0版本已经将漫画抽离出来了，我本身只能维护线上这些源，如果你有能力可以自己写源，并且导入，里面有测试。大家可以根据教程进行进行编写，源所用的依赖类，是基于cimoc中工具类，这些没变动。
 > app的下载地址： [漫漫看](https://wws.lanzous.com/b01tpu2dg)
 > 链接地址：https://wws.lanzous.com/b01tpu2dg
 
@@ -42,7 +42,146 @@ Second development project based on cimoc project, thank the original author
 <img src="./images/7.jpg" width="250">
 
 # 增加图源（欢迎pr）
-- 关于开发新的图源，你可以参考项目中js，所有套路都是一样的，可能解析漫画地址的核心逻辑会不一样。整体逻辑都是一样，注意没个源sort是唯一的，请注意参考。
+- 关于开发新的图源，你可以参考项目中js，所有套路都是一样的，可能解析漫画地址的核心逻辑会不一样。整体逻辑都是一样，注意每个源type是唯一的，请注意参考。
+> 3.1版本的源开发教程
+> 自己开发源后，本地导入，或者网络导入都行。
+> 关于源书写教程
+
+```js
+
+图源制作教程：
+图源管理：本地和网络导入时：将源对象打包json数组字符串，导入app。
+新建图源是：本地和网络导入json对象，进行调试。
+下面一个源简单示例：
+
+var source = {
+  comicSourceName: '奇妙漫画💯', // 图源标题
+  comicSourceUrl: 'https://www.qimiaomh.com/', // 图源地址
+  enable: true, // 是否启用
+  imgHeaders: // 图片请求头：有的网站是必须要有的，三个函数：getHeader, getHeader2, getHeader3,
+  'function getHeader(){return Headers.of("Referer","https://www.nadu8.com/")}function getHeader2(url){return getHeader()}function getHeader3(){return getHeader()};',
+
+  // 漫画详情： %s 替换cid
+  ruleComicInfoUrl: 'https://www.qimiaomh.com/manhua/%s.html',
+  ruleComicTitle: '@css:.ctdbRightInner .title@text', // 详情标题
+  ruleComicAuthor: '@css:.author@text@js:result.replace("作者","")', // 详情作者
+  ruleComicCover:
+  '@css:.ctdbLeft a >img@src ', // 封面
+  ruleComicInstro: '@css:#worksDesc@text', // 简介
+  ruleComicStatus: false,  // 更新状态
+  ruleComicLianZai: '', // 连载解析是否完结
+  ruleComicUpdate: '@css:.updeteStatus .date@text@js:result.replace("更新","")', // 更新
+  ruleChapterList: '@css:.comic-content-list .comic-content-c',
+  ruleChapterName: '@css:.tit a@text',
+  ruleChapterUrl: '@css:.tit a@href@js:var did=java.splitHref(result,-3);var sid=java.splitHref(result,-2);"/Action/Play/AjaxLoadImgUrl?did="+did+"&sid="+sid',
+
+  // 图片详情
+  ruleContentUrl: // 两个替换参数 param1==cid, param2==path
+  'https://www.qimiaomh.comparam2',
+ // /<script>var sFiles.+<\\/script>/ 要打\\两个反斜杠
+  ruleComicContent:  // 漫画图片解析: 导入依赖包，content注入内容
+  `
+  importClass(Packages.java.util.ArrayList)
+  importPackage(Packages.com.reader.comic.model)
+  importClass(Packages.com.reader.comic.utils.StringUtils)
+  importClass(Packages.com.reader.comic.soup.Node)
+
+  function parseImages() {
+      var list = new ArrayList();
+      var picdata = JSON.parse(content);
+
+      for (var i = 0 ; i < picdata.listImg.length; i ++) {
+          var url = picdata.listImg[i];
+          list.add(new ImageUrl(i+1, url, false));
+      }
+      return list;
+  }
+
+
+  `,
+
+  // 推荐
+
+  ruleFindAuthor: '',
+  ruleFindCid: '@css:h2 a@href@js:java.splitHref(result, -2)',
+  ruleFindCoverUrl:
+  '@css:.tit_img@data-src',
+  ruleFindList: 'class.classification',
+  ruleFindTitle: '@css:h2 a@text',
+  ruleFindUpdate: '@css:.describe@text',
+  ruleFindUrl:`
+  全部::https://www.qimiaomh.com/list-1------updatetime--searchPage.html&&热血::https://www.qimiaomh.com/list-1-7-----updatetime--searchPage.html&&恋爱::https://www.qimiaomh.com/list-1-8-----updatetime--searchPage.html&&青春::https://www.qimiaomh.com/list-1-9-----updatetime--searchPage.html&&彩虹::https://www.qimiaomh.com/list-1-10-----updatetime--searchPage.html&&冒险::https://www.qimiaomh.com/list-1-11-----updatetime--searchPage.html&&后宫::https://www.qimiaomh.com/list-1-12-----updatetime--searchPage.html&&悬疑::https://www.qimiaomh.com/list-1-13-----updatetime--searchPage.html&&玄幻::https://www.qimiaomh.com/list-1-14-----updatetime--searchPage.html&&穿越::https://www.qimiaomh.com/list-1-16-----updatetime--searchPage.html&&都市::https://www.qimiaomh.com/list-1-17-----updatetime--searchPage.html&&腹黑::https://www.qimiaomh.com/list-1-18-----updatetime--searchPage.html&&爆笑::https://www.qimiaomh.com/list-1-19-----updatetime--searchPage.html&&少年::https://www.qimiaomh.com/list-1-20-----updatetime--searchPage.html&&奇幻::https://www.qimiaomh.com/list-1-21-----updatetime--searchPage.html&&古风::https://www.qimiaomh.com/list-1-22-----updatetime--searchPage.html&&妖恋::https://www.qimiaomh.com/list-1-23-----updatetime--searchPage.html&&元气::https://www.qimiaomh.com/list-1-24-----updatetime--searchPage.html&&治愈::https://www.qimiaomh.com/list-1-25-----updatetime--searchPage.html&&励志::https://www.qimiaomh.com/list-1-26-----updatetime--searchPage.html&&日常::https://www.qimiaomh.com/list-1-27-----updatetime--searchPage.html&&百合::https://www.qimiaomh.com/list-1-28-----updatetime--searchPage.html
+  `
+  ,
+
+
+  // 搜索
+
+  ruleSearchAuthor: '',
+  ruleSearchCid: '@css:h2 a@href@js:java.splitHref(result, -2)',
+  ruleSearchCoverUrl: '@css:.tit_img@data-src',
+  ruleSearchList: 'class.classification',
+  ruleSearchTitle: '@css:h2 a@text',
+  ruleSearchUpdate: '@css:.describe@text',
+  ruleSearchUrl:
+  'https://www.qimiaomh.com/action/Search?keyword=searchKey&page=searchPage',
+
+
+  sort: '79',
+  type: 79
+};
+本示例采用node进行开发的：
+写入代码：
+var arr = [];
+arr.push(source);
+var str = JSON.stringify(arr);
+fs.writeFile("./data.json", str, error => {
+  if (error) return console.log("写入文件失败,原因是" + error.message);
+  console.log("写入成功");
+});
+
+
+
+
+ 支持jsoup select语法,以@css:开头,语法见http://www.open-open.com/jsoup/selector-syntax.htm
+- 支持JSonPath语法,以@JSon:开头,语法见 https://blog.csdn.net/koflance/article/details/63262484
+- JsonPath获取字符支持此种写法xxx{$._id}yyy{$.chapter}zzz
+- 支持用js处理结果,以<js>开头</js>结尾,或者@js, 结果变量为result,网址变量为bastPath,位置任意,按顺序执行
+  如 <js>result=result.replace(/[\\w\\W]*url:'(.*?)'[\\w\\W]*/,\"$1\");
+- ##替换内容##替换为,支持正则
+- 可以使用@Header:{key:value,key:value}定义访问头,添加在Url规则头部,或尾部
+- 除去封面地址,其它地址都支持搜索地址的表达方式
+- 自定义js方法
+java.substring(String str, int start)
+java.evalJS(String jsStr, Object result)
+java.getFormatTime (String format, long time)
+java.splitHref (String str, int index)
+
+简单规则写法
+- @为分隔符,用来分隔获取规则
+- 每段规则可分为3段
+- 第一段是类型,如class,id,tag,text,children等, children获取所有子标签,不需要第二段和第三段,text可以根据文本内容获取
+- 第二段是名称,text. 第二段为文本内容的一部分
+- 第三段是位置,class,tag,id等会获取到多个,所以要加位置
+- 如不加位置会获取所有
+- 位置正数从0开始,0是第一个,如为负数则是取倒数的值,-1为最倒数第一个,-2为倒数第二个
+- !是排除,有些位置不符合需要排除用!,后面的序号用:隔开0是第1个,负数为倒数序号,-1最后一个,-2倒数第2个,依次
+- 获取列表的最前面加上负号- 可以使列表倒置,有些网站目录列表是倒的,前面加个负号可变为正的
+- @的最后一段为获取内容,如text,textNodes,href,src,html等
+- 如果有不同网页的规则可以用 || 或 && 分隔 或 %%
+- ||会以第一个取到值的为准,
+- && 会合并所有规则取到的值,
+- %% 会依次取数,如三个列表,先取列表1的第一个,再取列表2的第一个,再取列表3的第一个,再取列表1的第2个.......
+- 如需要正则替换在最后加上 ##正则表达式##替换为,##替换最新版本支持所有规则
+- 例:class.odd.0@tag.a.0@text|tag.dd.0@tag.h1@text#全文阅读
+- 例:class.odd.0@tag.a.0@text&tag.dd.0@tag.h1@text#全文阅读
+
+
+
+
+```
+
+> 3.0版本的源开发教程
 > 自己开发源后，本地导入，或者网络导入都行。
 > 关于源书写教程
  ```js
